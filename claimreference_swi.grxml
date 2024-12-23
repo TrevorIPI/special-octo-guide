@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+
+<grammar xml:lang="en-gb" version="1.0" xmlns="http://www.w3.org/2001/06/grammar"  tag-format='swi-semantics/1.0' 
+   root="CLAIMDIGITS">
+
+  <rule id="CLAIMDIGITS" scope="public">
+    <item>
+      <ruleref special="GARBAGE"/>
+      <ruleref uri="#CLAIM"/>
+      <tag>SWI_meaning=CLAIM.V.replace(/-(.)/g, '$1$1').replace(/-/g,''); RESULT=SWI_meaning;</tag>
+    </item>
+    <item repeat="0-1">
+       <ruleref uri="#ALPHA"/>
+    </item>
+  </rule>
+
+  <rule id="CLAIM">
+    <item repeat="7">
+       <ruleref uri="#DIGIT"/>
+       <tag>V = V ? V + DIGIT.V : DIGIT.V;</tag>
+    </item>
+  </rule>
+
+  <rule id="DIGIT">
+    <one-of>
+      <item> double <tag>V='-';</tag> </item>
+      <item>
+        <ruleref uri="#ZERO"/>
+        <tag>V='0';</tag>
+      </item>
+      <item>
+        one <tag>V='1';</tag>
+      </item>
+      <item>
+        two <tag>V='2';</tag>
+      </item>
+      <item>
+        three <tag>V='3';</tag>
+      </item>
+      <item>
+        four <tag>V='4';</tag>
+      </item>
+      <item>
+        five <tag>V='5';</tag>
+      </item>
+      <item>
+        six <tag>V='6';</tag>
+      </item>
+      <item>
+        seven <tag>V='7';</tag>
+      </item>
+      <item>
+        eight <tag>V='8';</tag>
+      </item>
+      <item>
+        nine <tag>V='9';</tag>
+      </item>
+    </one-of>
+  </rule>
+  <rule id="ZERO">
+    <one-of>
+      <item weight="0.3">oh</item>
+      <item>zero</item>
+    </one-of>
+  </rule>
+  <rule id="ALPHA"> 
+    <one-of> 
+	<item>A</item> 
+	<item>B</item> 
+	<item>C</item> 
+	<item>D</item> 
+	<item>E</item> 
+	<item>F</item> 
+	<item>G</item> 
+	<item>H</item> 
+	<item>I</item> 
+	<item>J</item> 
+	<item>K</item> 
+	<item>L</item> 
+	<item>M</item> 
+	<item>N</item> 
+	<item>O</item> 
+	<item>P</item> 
+	<item>Q</item> 
+	<item>R</item> 
+	<item>S</item> 
+	<item>T</item> 
+	<item>U</item> 
+	<item>V</item> 
+	<item>W</item> 
+	<item>X</item> 
+	<item>Y</item> 
+	<item>Z</item> 
+     </one-of> 
+  </rule> 
+</grammar>
