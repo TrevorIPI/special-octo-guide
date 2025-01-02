@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" xml:lang="en-gb" tag-format="semantics/1.0" root="_ROOT_">
 
-<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" xml:lang="en-gb" tag-format="swi-semantics/1.0" root="_ROOT_">
-	<meta name="swirec_compile_parser_with_weights" content="1"/>
 	<rule id="_ROOT_" scope="public">
 		<one-of>
 			<item>
 				<ruleref uri="#dateOfBirth"/>
 				<tag>
-					MEANING = dateOfBirth.VALUE;
+					out = rules.dateOfBirth;
 				</tag>
 			</item>
 		</one-of>
@@ -27,9 +26,18 @@
 				<ruleref uri="#month"/>
 				<ruleref uri="#year"/>
 				<tag>
-					VALUE = day.VALUE + month.VALUE + year.VALUE;
-					DAY = new Number(day.VALUE);
-					switch(month.VALUE){
+					out =  rules.year + rules.month + rules.day;
+
+
+					var YR = new Number(rules.year);
+					if(YR &lt; 20) {
+						out ='20' + out; 
+					} else {
+						out ='19' + out; 
+					}
+					var DAY = new Number(rules.day);
+					var SWI_disallow = 0;
+					switch(rules.month){
 						case '02':
 							if(DAY>29) SWI_disallow = 1;
 							break;
@@ -56,27 +64,14 @@
 				<ruleref uri="#day"/>
 				<ruleref uri="#year"/>
 				<tag>
-					VALUE = day.VALUE + months.VALUE + year.VALUE;
-					DAY = new Number(day.VALUE);
-					switch(months.VALUE){
-						case '02':
-							if(DAY>29) SWI_disallow = 1;
-							break;
-						case '04':
-							if(DAY>30) SWI_disallow = 1;
-							break;
-						case '06':
-							if(DAY>30) SWI_disallow = 1;
-							break;
-						case '09':
-							if(DAY>30) SWI_disallow = 1;
-							break;
-						case '11':
-							if(DAY>30) SWI_disallow = 1;
-							break;
-						default:
-							break;
-					}
+	
+						rules.year.CENTURY='19';
+						var YR = new Number(rules.year);
+						if(YR &lt; 20) {
+							rules.year.CENTURY='20'; 
+						}
+					out =  rules.year.CENTURY + rules.year + rules.months + rules.day;
+					var DAY = new Number(rules.day);
 				</tag>
 			</item>
 		</one-of>
@@ -88,49 +83,46 @@
 			<item>
 				<ruleref uri="#one_to_thirty_digits"/>
 				<tag>
-					VALUE=one_to_thirty_digits.VALUE;
-					DIGITS_FLAG=true;
+					out=rules.one_to_thirty_digits;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#digits_noughties"/>
 				<tag>
-					VALUE=digits_noughties.VALUE;
-					DIGITS_FLAG=true;
+					out=rules.digits_noughties;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#ordinals"/>
 				<tag>
-					VALUE=ordinals.VALUE;
+					out=rules.ordinals;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#ordinal_teens"/>
 				<tag>
-					VALUE=ordinal_teens.VALUE;
+					out=rules.ordinal_teens;
 				</tag>
 			</item>
 			<item>
 				twenty
 				<ruleref uri="#ordinals_1_9"/>
 				<tag>
-					ten = ordinals_1_9.VALUE;
-					VALUE='2' + ten.substring(1);
+					out.ten = rules.ordinals_1_9;
+					out='2' + out.ten.substring(1);
 				</tag>
 			</item>
 			<item>
 				two
 				<ruleref uri="#one_nine_digits"/>
 				<tag>
-					VALUE = '2' + one_nine_digits.VALUE;
-					DIGITS_FLAG=true;
+					out = '2' + rules.one_nine_digits;
 				</tag>
 			</item>
-			<item>thirtieth<tag>VALUE='30';</tag></item>
-			<item>three<ruleref uri="#zero"/><tag>VALUE='30'; DIGITS_FLAG=true;</tag></item>
-			<item>three one<tag>VALUE='31'; DIGITS_FLAG=true;</tag></item>
-			<item>thirty first<tag>VALUE='31';</tag></item>
+			<item>thirtieth<tag>out='30';</tag></item>
+			<item>three<ruleref uri="#zero"/><tag>out='30'; </tag></item>
+			<item>three one<tag>out='31'; </tag></item>
+			<item>thirty first<tag>out='31';</tag></item>
 		</one-of>
 	</rule>
 	
@@ -139,34 +131,31 @@
 			<item>
 				<ruleref uri="#ordinals"/>
 				<tag>
-					VALUE=ordinals.VALUE;
+					out=rules.ordinals;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#one_to_twelve_digits"/>
 				<tag>
-					VALUE=one_to_twelve_digits.VALUE;
-					DIGITS_FLAG=true;
+					out=rules.one_to_twelve_digits;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#digits_noughties"/>
 				<tag>
-					VALUE=digits_noughties.VALUE;
-					DIGITS_FLAG=true;
+					out=rules.digits_noughties;
 				</tag>
 			</item>
 			<item>
 				<ruleref uri="#months"/>
 				<tag>
-					VALUE=months.VALUE;
-					full=months.full;
+					out=rules.months;
 				</tag>
 			</item>
 			<item>
 				<item>one<ruleref uri="#zero"/></item>
 				<tag>
-					VALUE='10';
+					out='10';
 				</tag>
 			</item>
 			<item>
@@ -175,7 +164,7 @@
 					<item>one one</item>
 				</one-of>
 				<tag>
-					VALUE='11';
+					out='11';
 				</tag>
 			</item>
 			<item>
@@ -184,25 +173,26 @@
 					<item>one two</item>
 				</one-of>
 				<tag>
-					VALUE='12';
+					out='12';
 				</tag>
 			</item>
 		</one-of>
 	</rule>
 
 	<rule id="year" scope="private">
+
 		<one-of>
 			<item>
 				<one-of>
-					<item>two thousand<tag>VALUE = '00';</tag></item>
-					<item>nineteen<tag>VALUE = '00';</tag></item>
+					<item>two thousand<tag>out.CENTURY='20';out = '00';</tag></item>
+					<item>nineteen<tag>out.CENTURY='19';out = '00';</tag></item>
 				</one-of>
 			</item>
 			<item>
 				<item repeat="0-1">
 					<one-of>
-						<item>nineteen</item>
-						<item>
+						<item>nineteen<tag>out.CENTURY='19';</tag></item>
+						<item><tag>out.CENTURY='20';</tag>
 							<item>two thousand</item>
 							<item repeat="0-1">and</item>
 						</item>
@@ -212,96 +202,96 @@
 					<one-of>
 						<item>
 							<ruleref uri="#one_nine_digits"/>
-							<tag>VALUE = '0' + one_nine_digits.VALUE;</tag>
+							<tag>out = '0' + rules.one_nine_digits;</tag>
 						</item>
 						<item>
 							<ruleref uri="#digits_noughties"/>
-							<tag>VALUE = digits_noughties.VALUE;</tag>
+							<tag>out =  rules.digits_noughties;</tag>
 						</item>
 						<item>
 							<ruleref uri="#digits_teens"/>
-							<tag>VALUE = digits_teens.VALUE;</tag>
+							<tag>out =  rules.digits_teens;</tag>
 						</item>
-						<item>twenty <tag>VALUE = '20';</tag></item>
-						<item>twenty one<tag>VALUE = '21';</tag></item>
-						<item>twenty two<tag>VALUE = '22';</tag></item>
-						<item>twenty three<tag>VALUE = '23';</tag></item>
-						<item>twenty four<tag>VALUE = '24';</tag></item>
-						<item>twenty five<tag>VALUE = '25';</tag></item>
-						<item>twenty six<tag>VALUE = '26';</tag></item>
-						<item>twenty seven<tag>VALUE = '27';</tag></item>
-						<item>twenty eight<tag>VALUE = '28';</tag></item>
-						<item>twenty nine<tag>VALUE = '29';</tag></item>
-						<item>thirty <tag>VALUE = '30';</tag></item>
-						<item>thirty one<tag>VALUE = '31';</tag></item>
-						<item>thirty two<tag>VALUE = '32';</tag></item>
-						<item>thirty three<tag>VALUE = '33';</tag></item>
-						<item>thirty four<tag>VALUE = '34';</tag></item>
-						<item>thirty five<tag>VALUE = '35';</tag></item>
-						<item>thirty six<tag>VALUE = '36';</tag></item>
-						<item>thirty seven<tag>VALUE = '37';</tag></item>
-						<item>thirty eight<tag>VALUE = '38';</tag></item>
-						<item>thirty nine<tag>VALUE = '39';</tag></item>
-						<item>forty <tag>VALUE = '40';</tag></item>
-						<item>forty one<tag>VALUE = '41';</tag></item>
-						<item>forty two<tag>VALUE = '42';</tag></item>
-						<item>forty three<tag>VALUE = '43';</tag></item>
-						<item>forty four<tag>VALUE = '44';</tag></item>
-						<item>forty five<tag>VALUE = '45';</tag></item>
-						<item>forty six<tag>VALUE = '46';</tag></item>
-						<item>forty seven<tag>VALUE = '47';</tag></item>
-						<item>forty eight<tag>VALUE = '48';</tag></item>
-						<item>forty nine<tag>VALUE = '49';</tag></item>
-						<item>fifty <tag>VALUE = '50';</tag></item>
-						<item>fifty one<tag>VALUE = '51';</tag></item>
-						<item>fifty two<tag>VALUE = '52';</tag></item>
-						<item>fifty three<tag>VALUE = '53';</tag></item>
-						<item>fifty four<tag>VALUE = '54';</tag></item>
-						<item>fifty five<tag>VALUE = '55';</tag></item>
-						<item>fifty six<tag>VALUE = '56';</tag></item>
-						<item>fifty seven<tag>VALUE = '57';</tag></item>
-						<item>fifty eight<tag>VALUE = '58';</tag></item>
-						<item>fifty nine<tag>VALUE = '59';</tag></item>
-						<item>sixty <tag>VALUE = '60';</tag></item>
-						<item>sixty one<tag>VALUE = '61';</tag></item>
-						<item>sixty two<tag>VALUE = '62';</tag></item>
-						<item>sixty three<tag>VALUE = '63';</tag></item>
-						<item>sixty four<tag>VALUE = '64';</tag></item>
-						<item>sixty five<tag>VALUE = '65';</tag></item>
-						<item>sixty six<tag>VALUE = '66';</tag></item>
-						<item>sixty seven<tag>VALUE = '67';</tag></item>
-						<item>sixty eight<tag>VALUE = '68';</tag></item>
-						<item>sixty nine<tag>VALUE = '69';</tag></item>
-						<item>seventy <tag>VALUE = '70';</tag></item>
-						<item>seventy one<tag>VALUE = '71';</tag></item>
-						<item>seventy two<tag>VALUE = '72';</tag></item>
-						<item>seventy three<tag>VALUE = '73';</tag></item>
-						<item>seventy four<tag>VALUE = '74';</tag></item>
-						<item>seventy five<tag>VALUE = '75';</tag></item>
-						<item>seventy six<tag>VALUE = '76';</tag></item>
-						<item>seventy seven<tag>VALUE = '77';</tag></item>
-						<item>seventy eight<tag>VALUE = '78';</tag></item>
-						<item>seventy nine<tag>VALUE = '79';</tag></item>
-						<item>eighty <tag>VALUE = '80';</tag></item>
-						<item>eighty one<tag>VALUE = '81';</tag></item>
-						<item>eighty two<tag>VALUE = '82';</tag></item>
-						<item>eighty three<tag>VALUE = '83';</tag></item>
-						<item>eighty four<tag>VALUE = '84';</tag></item>
-						<item>eighty five<tag>VALUE = '85';</tag></item>
-						<item>eighty six<tag>VALUE = '86';</tag></item>
-						<item>eighty seven<tag>VALUE = '87';</tag></item>
-						<item>eighty eight<tag>VALUE = '88';</tag></item>
-						<item>eighty nine<tag>VALUE = '89';</tag></item>
-						<item>ninety <tag>VALUE = '90';</tag></item>
-						<item>ninety one<tag>VALUE = '91';</tag></item>
-						<item>ninety two<tag>VALUE = '92';</tag></item>
-						<item>ninety three<tag>VALUE = '93';</tag></item>
-						<item>ninety four<tag>VALUE = '94';</tag></item>
-						<item>ninety five<tag>VALUE = '95';</tag></item>
-						<item>ninety six<tag>VALUE = '96';</tag></item>
-						<item>ninety seven<tag>VALUE = '97';</tag></item>
-						<item>ninety eight<tag>VALUE = '98';</tag></item>
-						<item>ninety nine<tag>VALUE = '99';</tag></item>			
+						<item>twenty <tag>out = '20';</tag></item>
+						<item>twenty one<tag>out = '21';</tag></item>
+						<item>twenty two<tag>out = '22';</tag></item>
+						<item>twenty three<tag>out = '23';</tag></item>
+						<item>twenty four<tag>out = '24';</tag></item>
+						<item>twenty five<tag>out = '25';</tag></item>
+						<item>twenty six<tag>out = '26';</tag></item>
+						<item>twenty seven<tag>out = '27';</tag></item>
+						<item>twenty eight<tag>out = '28';</tag></item>
+						<item>twenty nine<tag>out = '29';</tag></item>
+						<item>thirty <tag>out = '30';</tag></item>
+						<item>thirty one<tag>out = '31';</tag></item>
+						<item>thirty two<tag>out = '32';</tag></item>
+						<item>thirty three<tag>out = '33';</tag></item>
+						<item>thirty four<tag>out = '34';</tag></item>
+						<item>thirty five<tag>out = '35';</tag></item>
+						<item>thirty six<tag>out = '36';</tag></item>
+						<item>thirty seven<tag>out = '37';</tag></item>
+						<item>thirty eight<tag>out = '38';</tag></item>
+						<item>thirty nine<tag>out = '39';</tag></item>
+						<item>forty <tag>out = '40';</tag></item>
+						<item>forty one<tag>out = '41';</tag></item>
+						<item>forty two<tag>out = '42';</tag></item>
+						<item>forty three<tag>out = '43';</tag></item>
+						<item>forty four<tag>out = '44';</tag></item>
+						<item>forty five<tag>out = '45';</tag></item>
+						<item>forty six<tag>out = '46';</tag></item>
+						<item>forty seven<tag>out = '47';</tag></item>
+						<item>forty eight<tag>out = '48';</tag></item>
+						<item>forty nine<tag>out = '49';</tag></item>
+						<item>fifty <tag>out = '50';</tag></item>
+						<item>fifty one<tag>out = '51';</tag></item>
+						<item>fifty two<tag>out = '52';</tag></item>
+						<item>fifty three<tag>out = '53';</tag></item>
+						<item>fifty four<tag>out = '54';</tag></item>
+						<item>fifty five<tag>out = '55';</tag></item>
+						<item>fifty six<tag>out = '56';</tag></item>
+						<item>fifty seven<tag>out = '57';</tag></item>
+						<item>fifty eight<tag>out = '58';</tag></item>
+						<item>fifty nine<tag>out = '59';</tag></item>
+						<item>sixty <tag>out = '60';</tag></item>
+						<item>sixty one<tag>out = '61';</tag></item>
+						<item>sixty two<tag>out = '62';</tag></item>
+						<item>sixty three<tag>out = '63';</tag></item>
+						<item>sixty four<tag>out = '64';</tag></item>
+						<item>sixty five<tag>out = '65';</tag></item>
+						<item>sixty six<tag>out = '66';</tag></item>
+						<item>sixty seven<tag>out = '67';</tag></item>
+						<item>sixty eight<tag>out = '68';</tag></item>
+						<item>sixty nine<tag>out = '69';</tag></item>
+						<item>seventy <tag>out = '70';</tag></item>
+						<item>seventy one<tag>out = '71';</tag></item>
+						<item>seventy two<tag>out = '72';</tag></item>
+						<item>seventy three<tag>out = '73';</tag></item>
+						<item>seventy four<tag>out = '74';</tag></item>
+						<item>seventy five<tag>out = '75';</tag></item>
+						<item>seventy six<tag>out = '76';</tag></item>
+						<item>seventy seven<tag>out = '77';</tag></item>
+						<item>seventy eight<tag>out = '78';</tag></item>
+						<item>seventy nine<tag>out = '79';</tag></item>
+						<item>eighty <tag>out = '80';</tag></item>
+						<item>eighty one<tag>out = '81';</tag></item>
+						<item>eighty two<tag>out = '82';</tag></item>
+						<item>eighty three<tag>out = '83';</tag></item>
+						<item>eighty four<tag>out = '84';</tag></item>
+						<item>eighty five<tag>out = '85';</tag></item>
+						<item>eighty six<tag>out = '86';</tag></item>
+						<item>eighty seven<tag>out = '87';</tag></item>
+						<item>eighty eight<tag>out = '88';</tag></item>
+						<item>eighty nine<tag>out = '89';</tag></item>
+						<item>ninety <tag>out = '90';</tag></item>
+						<item>ninety one<tag>out = '91';</tag></item>
+						<item>ninety two<tag>out = '92';</tag></item>
+						<item>ninety three<tag>out = '93';</tag></item>
+						<item>ninety four<tag>out = '94';</tag></item>
+						<item>ninety five<tag>out = '95';</tag></item>
+						<item>ninety six<tag>out = '96';</tag></item>
+						<item>ninety seven<tag>out = '97';</tag></item>
+						<item>ninety eight<tag>out = '98';</tag></item>
+						<item>ninety nine<tag>out = '99';</tag></item>			
 					</one-of>
 				</item>
 			</item>
@@ -311,124 +301,124 @@
 	
 	<rule id="zero" scope="private">
 		<one-of>
-			<item>zero<tag>VALUE='0';</tag></item>
-			<item>nought<tag>VALUE='0';</tag></item>
-			<item>oh<tag>VALUE='0';</tag></item>
+			<item>zero<tag>out='0';</tag></item>
+			<item>nought<tag>out='0';</tag></item>
+			<item>oh<tag>out='0';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="one_to_thirty_digits" scope="private">
 		<one-of>
-			<item>one<tag>VALUE='01';</tag></item>
-			<item>two<tag>VALUE='02';</tag></item>
-			<item>three<tag>VALUE='03';</tag></item>
-			<item>four<tag>VALUE='04';</tag></item>
-			<item>five<tag>VALUE='05';</tag></item>
-			<item>six<tag>VALUE='06';</tag></item>
-			<item>seven<tag>VALUE='07';</tag></item>
-			<item>eight<tag>VALUE='08';</tag></item>
-			<item>nine<tag>VALUE='09';</tag></item>
-			<item>ten<tag>VALUE='10';</tag></item>
-			<item>eleven<tag>VALUE='11';</tag></item>
-			<item>twelve<tag>VALUE='12';</tag></item>
-			<item>thirteen<tag>VALUE='13';</tag></item>
-			<item>fourteen<tag>VALUE='14';</tag></item>
-			<item>fifteen<tag>VALUE='15';</tag></item>
-			<item>sixteen<tag>VALUE='16';</tag></item>
-			<item>seventeen<tag>VALUE='17';</tag></item>
-			<item>eighteen<tag>VALUE='18';</tag></item>
-			<item>nineteen<tag>VALUE='19';</tag></item>
-			<item>twenty<tag>VALUE='20';</tag></item>
-			<item>twenty one<tag>VALUE='21';</tag></item>
-			<item>twenty two<tag>VALUE='22';</tag></item>
-			<item>twenty three<tag>VALUE='23';</tag></item>
-			<item>twenty four<tag>VALUE='24';</tag></item>
-			<item>twenty five<tag>VALUE='25';</tag></item>
-			<item>twenty six<tag>VALUE='26';</tag></item>
-			<item>twenty seven<tag>VALUE='27';</tag></item>
-			<item>twenty eight<tag>VALUE='28';</tag></item>
-			<item>twenty nine<tag>VALUE='29';</tag></item>
-			<item>thirty<tag>VALUE='30';</tag></item>
-			<item>thirty one<tag>VALUE='31';</tag></item>
+			<item>one<tag>out='01';</tag></item>
+			<item>two<tag>out='02';</tag></item>
+			<item>three<tag>out='03';</tag></item>
+			<item>four<tag>out='04';</tag></item>
+			<item>five<tag>out='05';</tag></item>
+			<item>six<tag>out='06';</tag></item>
+			<item>seven<tag>out='07';</tag></item>
+			<item>eight<tag>out='08';</tag></item>
+			<item>nine<tag>out='09';</tag></item>
+			<item>ten<tag>out='10';</tag></item>
+			<item>eleven<tag>out='11';</tag></item>
+			<item>twelve<tag>out='12';</tag></item>
+			<item>thirteen<tag>out='13';</tag></item>
+			<item>fourteen<tag>out='14';</tag></item>
+			<item>fifteen<tag>out='15';</tag></item>
+			<item>sixteen<tag>out='16';</tag></item>
+			<item>seventeen<tag>out='17';</tag></item>
+			<item>eighteen<tag>out='18';</tag></item>
+			<item>nineteen<tag>out='19';</tag></item>
+			<item>twenty<tag>out='20';</tag></item>
+			<item>twenty one<tag>out='21';</tag></item>
+			<item>twenty two<tag>out='22';</tag></item>
+			<item>twenty three<tag>out='23';</tag></item>
+			<item>twenty four<tag>out='24';</tag></item>
+			<item>twenty five<tag>out='25';</tag></item>
+			<item>twenty six<tag>out='26';</tag></item>
+			<item>twenty seven<tag>out='27';</tag></item>
+			<item>twenty eight<tag>out='28';</tag></item>
+			<item>twenty nine<tag>out='29';</tag></item>
+			<item>thirty<tag>out='30';</tag></item>
+			<item>thirty one<tag>out='31';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="one_to_twelve_digits" scope="private">
 		<one-of>
-			<item>one<tag>VALUE='01';</tag></item>
-			<item>two<tag>VALUE='02';</tag></item>
-			<item>three<tag>VALUE='03';</tag></item>
-			<item>four<tag>VALUE='04';</tag></item>
-			<item>five<tag>VALUE='05';</tag></item>
-			<item>six<tag>VALUE='06';</tag></item>
-			<item>seven<tag>VALUE='07';</tag></item>
-			<item>eight<tag>VALUE='08';</tag></item>
-			<item>nine<tag>VALUE='09';</tag></item>
-			<item>ten<tag>VALUE='10';</tag></item>
-			<item>eleven<tag>VALUE='11';</tag></item>
-			<item>twelve<tag>VALUE='12';</tag></item>
+			<item>one<tag>out='01';</tag></item>
+			<item>two<tag>out='02';</tag></item>
+			<item>three<tag>out='03';</tag></item>
+			<item>four<tag>out='04';</tag></item>
+			<item>five<tag>out='05';</tag></item>
+			<item>six<tag>out='06';</tag></item>
+			<item>seven<tag>out='07';</tag></item>
+			<item>eight<tag>out='08';</tag></item>
+			<item>nine<tag>out='09';</tag></item>
+			<item>ten<tag>out='10';</tag></item>
+			<item>eleven<tag>out='11';</tag></item>
+			<item>twelve<tag>out='12';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="ordinals" scope="private">
 		<one-of>
-			<item>first<tag>VALUE='01';</tag></item>
-			<item>second<tag>VALUE='02';</tag></item>
-			<item>third<tag>VALUE='03';</tag></item>
-			<item>fourth<tag>VALUE='04';</tag></item>
-			<item>fifth<tag>VALUE='05';</tag></item>
-			<item>sixth<tag>VALUE='06';</tag></item>
-			<item>seventh<tag>VALUE='07';</tag></item>
-			<item>eighth<tag>VALUE='08';</tag></item>
-			<item>ninth<tag>VALUE='09';</tag></item>
-			<item>tenth<tag>VALUE='10';</tag></item>
+			<item>first<tag>out='01';</tag></item>
+			<item>second<tag>out='02';</tag></item>
+			<item>third<tag>out='03';</tag></item>
+			<item>fourth<tag>out='04';</tag></item>
+			<item>fifth<tag>out='05';</tag></item>
+			<item>sixth<tag>out='06';</tag></item>
+			<item>seventh<tag>out='07';</tag></item>
+			<item>eighth<tag>out='08';</tag></item>
+			<item>ninth<tag>out='09';</tag></item>
+			<item>tenth<tag>out='10';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="ordinals_1_9" scope="private">
 		<one-of>
-			<item>first<tag>VALUE='01';</tag></item>
-			<item>second<tag>VALUE='02';</tag></item>
-			<item>third<tag>VALUE='03';</tag></item>
-			<item>fourth<tag>VALUE='04';</tag></item>
-			<item>fifth<tag>VALUE='05';</tag></item>
-			<item>sixth<tag>VALUE='06';</tag></item>
-			<item>seventh<tag>VALUE='07';</tag></item>
-			<item>eighth<tag>VALUE='08';</tag></item>
-			<item>ninth<tag>VALUE='09';</tag></item>
+			<item>first<tag>out='01';</tag></item>
+			<item>second<tag>out='02';</tag></item>
+			<item>third<tag>out='03';</tag></item>
+			<item>fourth<tag>out='04';</tag></item>
+			<item>fifth<tag>out='05';</tag></item>
+			<item>sixth<tag>out='06';</tag></item>
+			<item>seventh<tag>out='07';</tag></item>
+			<item>eighth<tag>out='08';</tag></item>
+			<item>ninth<tag>out='09';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="ordinal_teens" scope="private">
 		<one-of>
-			<item>eleventh<tag>VALUE='11';</tag></item>
-			<item>twelfth<tag>VALUE='12';</tag></item>
-			<item>thirteenth<tag>VALUE='13';</tag></item>
-			<item>fourteenth<tag>VALUE='14';</tag></item>
-			<item>fifteenth<tag>VALUE='15';</tag></item>
-			<item>sixteenth<tag>VALUE='16';</tag></item>
-			<item>seventeenth<tag>VALUE='17';</tag></item>
-			<item>eighteenth<tag>VALUE='18';</tag></item>
-			<item>nineteenth<tag>VALUE='19';</tag></item>
-			<item>twentieth<tag>VALUE='20';</tag></item>
-			<item>thirtieth<tag>VALUE='30';</tag></item>
+			<item>eleventh<tag>out='11';</tag></item>
+			<item>twelfth<tag>out='12';</tag></item>
+			<item>thirteenth<tag>out='13';</tag></item>
+			<item>fourteenth<tag>out='14';</tag></item>
+			<item>fifteenth<tag>out='15';</tag></item>
+			<item>sixteenth<tag>out='16';</tag></item>
+			<item>seventeenth<tag>out='17';</tag></item>
+			<item>eighteenth<tag>out='18';</tag></item>
+			<item>nineteenth<tag>out='19';</tag></item>
+			<item>twentieth<tag>out='20';</tag></item>
+			<item>thirtieth<tag>out='30';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="months" scope="private">
 		<one-of>
-			<item>january<tag>VALUE='01'; full = true;</tag></item>
-			<item>february<tag>VALUE='02'; full = true;</tag></item>
-			<item>march<tag>VALUE='03'; full = true;</tag></item>
-			<item>april<tag>VALUE='04'; full = true;</tag></item>
-			<item>may<tag>VALUE='05'; full = true;</tag></item>
-			<item>june<tag>VALUE='06'; full = true;</tag></item>
-			<item>july<tag>VALUE='07'; full = true;</tag></item>
-			<item>august<tag>VALUE='08'; full = true;</tag></item>
-			<item>september<tag>VALUE='09'; full = true;</tag></item>
-			<item>october<tag>VALUE='10'; full = true;</tag></item>
-			<item>november<tag>VALUE='11'; full = true;</tag></item>
-			<item>december<tag>VALUE='12'; full = true;</tag></item>
+			<item>january<tag>out='01'; </tag></item>
+			<item>february<tag>out='02';</tag></item>
+			<item>march<tag>out='03';</tag></item>
+			<item>april<tag>out='04';</tag></item>
+			<item>may<tag>out='05';</tag></item>
+			<item>june<tag>out='06';</tag></item>
+			<item>july<tag>out='07';</tag></item>
+			<item>august<tag>out='08';</tag></item>
+			<item>september<tag>out='09';</tag></item>
+			<item>october<tag>out='10';</tag></item>
+			<item>november<tag>out='11';</tag></item>
+			<item>december<tag>out='12';</tag></item>
 		</one-of>
 	</rule>
 	
@@ -438,58 +428,58 @@
 		</item>
 		<item>
 			<one-of>
-				<item><ruleref uri="#zero"/>one<tag>VALUE='01';</tag></item>
-				<item><ruleref uri="#zero"/>two<tag>VALUE='02';</tag></item>
-				<item><ruleref uri="#zero"/>three<tag>VALUE='03';</tag></item>
-				<item><ruleref uri="#zero"/>four<tag>VALUE='04';</tag></item>
-				<item><ruleref uri="#zero"/>five<tag>VALUE='05';</tag></item>
-				<item><ruleref uri="#zero"/>six<tag>VALUE='06';</tag></item>
-				<item><ruleref uri="#zero"/>seven<tag>VALUE='07';</tag></item>
-				<item><ruleref uri="#zero"/>eight<tag>VALUE='08';</tag></item>
-				<item><ruleref uri="#zero"/>nine<tag>VALUE='09';</tag></item>
+				<item><ruleref uri="#zero"/>one<tag>out='01';</tag></item>
+				<item><ruleref uri="#zero"/>two<tag>out='02';</tag></item>
+				<item><ruleref uri="#zero"/>three<tag>out='03';</tag></item>
+				<item><ruleref uri="#zero"/>four<tag>out='04';</tag></item>
+				<item><ruleref uri="#zero"/>five<tag>out='05';</tag></item>
+				<item><ruleref uri="#zero"/>six<tag>out='06';</tag></item>
+				<item><ruleref uri="#zero"/>seven<tag>out='07';</tag></item>
+				<item><ruleref uri="#zero"/>eight<tag>out='08';</tag></item>
+				<item><ruleref uri="#zero"/>nine<tag>out='09';</tag></item>
 			</one-of>
 		</item>
 	</rule>
 	
 	<rule id="digits_teens" scope="private">
 		<one-of>
-			<item>ten<tag>VALUE='10';</tag></item>
-			<item>eleven<tag>VALUE='11';</tag></item>
-			<item>twelve<tag>VALUE='12';</tag></item>
-			<item>thirteen<tag>VALUE='13';</tag></item>
-			<item>fourteen<tag>VALUE='14';</tag></item>
-			<item>fifteen<tag>VALUE='15';</tag></item>
-			<item>sixteen<tag>VALUE='16';</tag></item>
-			<item>seventeen<tag>VALUE='17';</tag></item>
-			<item>eighteen<tag>VALUE='18';</tag></item>
-			<item>nineteen<tag>VALUE='19';</tag></item>
+			<item>ten<tag>out='10';</tag></item>
+			<item>eleven<tag>out='11';</tag></item>
+			<item>twelve<tag>out='12';</tag></item>
+			<item>thirteen<tag>out='13';</tag></item>
+			<item>fourteen<tag>out='14';</tag></item>
+			<item>fifteen<tag>out='15';</tag></item>
+			<item>sixteen<tag>out='16';</tag></item>
+			<item>seventeen<tag>out='17';</tag></item>
+			<item>eighteen<tag>out='18';</tag></item>
+			<item>nineteen<tag>out='19';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="digits_tens" scope="private">
 		<one-of>
-			<item>twenty<tag>VALUE='20';</tag></item>
-			<item>thirty<tag>VALUE='30';</tag></item>
-			<item>forty<tag>VALUE='40';</tag></item>
-			<item>fifty<tag>VALUE='50';</tag></item>
-			<item>sixty<tag>VALUE='60';</tag></item>
-			<item>seventy<tag>VALUE='70';</tag></item>
-			<item>eighty<tag>VALUE='80';</tag></item>
-			<item>ninety<tag>VALUE='90';</tag></item>
+			<item>twenty<tag>out='20';</tag></item>
+			<item>thirty<tag>out='30';</tag></item>
+			<item>forty<tag>out='40';</tag></item>
+			<item>fifty<tag>out='50';</tag></item>
+			<item>sixty<tag>out='60';</tag></item>
+			<item>seventy<tag>out='70';</tag></item>
+			<item>eighty<tag>out='80';</tag></item>
+			<item>ninety<tag>out='90';</tag></item>
 		</one-of>
 	</rule>
 	
 	<rule id="one_nine_digits" scope="private">
 		<one-of>
-			<item>one<tag>VALUE='1';</tag></item>
-			<item>two<tag>VALUE='2';</tag></item>
-			<item>three<tag>VALUE='3';</tag></item>
-			<item>four<tag>VALUE='4';</tag></item>
-			<item>five<tag>VALUE='5';</tag></item>
-			<item>six<tag>VALUE='6';</tag></item>
-			<item>seven<tag>VALUE='7';</tag></item>
-			<item>eight<tag>VALUE='8';</tag></item>
-			<item>nine<tag>VALUE='9';</tag></item>
+			<item>one<tag>out='1';</tag></item>
+			<item>two<tag>out='2';</tag></item>
+			<item>three<tag>out='3';</tag></item>
+			<item>four<tag>out='4';</tag></item>
+			<item>five<tag>out='5';</tag></item>
+			<item>six<tag>out='6';</tag></item>
+			<item>seven<tag>out='7';</tag></item>
+			<item>eight<tag>out='8';</tag></item>
+			<item>nine<tag>out='9';</tag></item>
 		</one-of>
 	</rule>
 	
