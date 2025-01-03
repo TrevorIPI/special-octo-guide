@@ -88,7 +88,7 @@
   <rule id="day_digits" scope="private">
     <one-of>
       <item>
-        <item><ruleref uri="#zero"/></item>
+        <item repeat="0-1"><ruleref uri="#zero"/></item>
         <one-of>
           <item>one<tag>out='01';</tag></item>
           <item>two<tag>out='02';</tag></item>
@@ -172,7 +172,7 @@
   <rule id="month_digits" scope="private">
     <one-of>
       <item>
-        <item><ruleref uri="#zero"/></item>
+        <item repeat="0-1"><ruleref uri="#zero"/></item>
         <one-of>
           <item>one<tag>out='01';</tag></item>
           <item>two<tag>out='02';</tag></item>
