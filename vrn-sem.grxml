@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" xml:lang="en-gb" tag-format="semantics/1.0" root="_ROOT_">
 
-<grammar xml:lang="en-gb" version="1.0" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0"
-   root="ROOT">
-
-<meta name="incompletetimeout" content="3000"/>
-<meta name="completetimeout" content="3000"/>
-<meta name="maxspeechtimeout" content="8000"/>
-
-  <rule id="ROOT" scope="public">
+  <rule id="_ROOT_" scope="public">
     <item repeat="0-1"><ruleref uri="#PREAMBLE"/></item>
     <one-of>
      <item weight=".1"> <ruleref uri="#NUMLET"/><tag>out=rules.NUMLET; </tag></item>
