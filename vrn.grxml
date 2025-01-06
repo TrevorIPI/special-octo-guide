@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<grammar xml:lang="en-gb" version="1.0" xmlns="http://www.w3.org/2001/06/grammar" 
+<grammar xml:lang="en-gb" version="1.0" xmlns="http://www.w3.org/2001/06/grammar" tag-format="swi-semantics/1.0" 
    root="ROOT">
 
 <meta name="incompletetimeout" content="3000"/>
