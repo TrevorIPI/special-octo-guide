@@ -147,7 +147,7 @@
 <rule id="AGEID">
     <tag> out = '';</tag>
     <one-of>
-      <item repeat="2"><ruleref uri="#DIGIT"/><tag>out += rules.DIGIT</tag></item>
+      <item><item repeat="2"><ruleref uri="#DIGIT"/><tag>out += rules.DIGIT</tag></item></item>
       <item><ruleref uri="#TEENS"/><tag>out = rules.TEENS </tag></item>
       <item>
 	<item><ruleref uri="#TENS"/><tag>out = (10 * rules.TENS);</tag></item>
